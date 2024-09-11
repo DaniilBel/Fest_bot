@@ -31,25 +31,28 @@ async def user_start(message: Message):
     )
 
 
-@user_router.message(Command('points'))
-async def show_user_points(message: Message):
-    user_id = message.from_user.id
-    points = user_points.get(user_id)
-    await message.answer(points)
-
-
 @user_router.message(Command('help'))
 async def show_help(message: Message):
     await message.answer(help_message)
 
 
+@user_router.message(F.chat.type.in_("private") & F.text.startswith('/points'))
+async def show_user_points(message: Message):
+    try:
+        user_id = message.from_user.id
+        points = user_points.get(user_id)
+        await message.answer(f"{points}")
+    except Exception as e:
+        print(e)
+        await message.answer("0")
+
+
 @user_router.message(lambda message: message.chat.type in ["private"] and message.text not in available_shortcut_tasks)
 async def forward_text_to_support(message: Message):
     if message.chat.id != GROUP_CHAT_ID:
-        forwarded_message = await bot.forward_message(
+        forwarded_message = await bot.send_message(
             chat_id=GROUP_CHAT_ID,
-            from_chat_id=message.chat.id,
-            message_id=message.message_id)
+            text=f"Игрок {message.from_user.full_name} с id: {message.from_user.id} отправил:\n{message.text}")
             # f"User {message.from_user.full_name} sent:\n{message.text}")
         message_mapping[forwarded_message.message_id] = message.from_user.id
 

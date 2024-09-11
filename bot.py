@@ -17,7 +17,7 @@ async def main():
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     logger = logging.getLogger(__name__)
 
-    dp.include_routers(user_router, support_router, task_router)
+    dp.include_routers(support_router, user_router, task_router)
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
     await set_commands()

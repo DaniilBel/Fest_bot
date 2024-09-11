@@ -20,7 +20,7 @@ help_message = """
 """
 
 
-@support_router.message(Command('help'))
+@support_router.message(F.chat.type.in_({"group", "supergroup"}) & F.text.startswith('/help'))
 async def show_help(message: Message):
     await message.answer(help_message)
 
