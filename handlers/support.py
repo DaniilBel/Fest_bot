@@ -15,8 +15,8 @@ emo = ["👎", "🔥"]
 
 help_message = """
 (reply) Текст
-(reply) /award <points>
-/setpoints <user_id> <points>
+(reply) /award points
+/setpoints user_id points
 """
 
 
