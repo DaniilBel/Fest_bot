@@ -6,23 +6,11 @@ from decouple import config
 
 from main import bot
 from db.store import message_mapping, user_points, restricted_users
-from strings import stories
 
 support_router = Router()
 GROUP_CHAT_ID = config('GROUP')
 
 emo = ["👎", "🔥"]
-
-help_message = """
-(reply) Текст
-(reply) /award points
-/setpoints user_id points
-"""
-
-
-@support_router.message(F.chat.type.in_({"group", "supergroup"}) & F.text.startswith('/help'))
-async def show_help(message: Message):
-    await message.answer(help_message)
 
 
 @support_router.message(F.chat.type.in_({"group", "supergroup"}) & F.reply_to_message & ~F.text.startswith('/award') & ~F.text.startswith('/setpoints'))
@@ -39,10 +27,13 @@ async def forward_reply_to_user(message: Message):
             await bot.send_message(user_id, f"Ответ поддержки:\n{message.text}")
         elif message.photo:
             photo = message.photo[-1]
-            await bot.send_photo(user_id, photo.file_id, caption="Support replied with a photo")
+            await bot.send_photo(user_id, photo.file_id, caption="Поддержка решила ответить фоткой")
         elif message.video:
             video = message.video
-            await bot.send_video(user_id, video.file_id, caption="Support replied with a video")
+            await bot.send_video(user_id, video.file_id, caption="Поддержка решила ответить видео")
+        elif message.video_chat_ended:
+            video_note = message.video_note
+            await bot.send_video(user_id, video_note.file_id, caption="Поддержка решила ответить кружочком")
 
         del message_mapping[original_message.message_id]
 
@@ -97,11 +88,6 @@ async def handle_edit_points(message: Message):
         await message.answer(f"Неправильный формат `/setpoints <user_id> <points>`")
     except KeyError:
         await message.answer("Игрок не найден")
-
-
-@support_router.message(F.chat.type.in_({"group", "supergroup"}) & ~F.reply_to_message)
-async def handle_non_reply_message(message: Message):
-    return
 
 
 async def unrestrict_user(user_id: int):

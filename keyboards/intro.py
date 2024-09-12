@@ -14,4 +14,12 @@ def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
         builder.button(text=item)
 
     builder.adjust(2)
+    builder.row(
+        KeyboardButton(
+            text="Написать в техподдержку"
+        ),
+        KeyboardButton(
+            text="Назад"
+        )
+    )
     return builder.as_markup(resize_keyboard=True)
