@@ -32,11 +32,16 @@ class ContributeState(StatesGroup):
 
 @util_user_router.message(Command("start"))
 async def user_start(message: Message):
+    user_id = message.from_user.id
     await message.answer(
         text=START_STORY,
         reply_markup=make_row_keyboard(available_shortcut_tasks)
     )
-    # await message.answer(text="Задонать", reply_markup=contribute_keyboard())
+    if user_contributions.get(user_id) is None:
+        user_contributions[user_id] = 0
+
+    if user_points.get(user_id) is None:
+        user_points[user_id] = 0
 
 
 @util_user_router.message(F.text == "Назад")
@@ -48,13 +53,13 @@ async def go_back(message: Message):
 @util_user_router.message(F.text == "Кол-во баллов на вкладе")
 async def go_back(message: Message):
     user_id = message.from_user.id
-    await message.answer(f"{user_contributions[user_id] if user_contributions[user_id] is not None else 0}")
+    await message.answer(f"{user_points[user_id] if user_contributions.get(user_id) is not None else 0}")
 
 
 @util_user_router.message(F.text == "Кол-во баллов")
 async def go_back(message: Message):
     user_id = message.from_user.id
-    await message.answer(f"{user_points[user_id] if user_points[user_id] is not None else 0}")
+    await message.answer(f"{user_points[user_id] if user_points.get(user_id) is not None else 0}")
 
 
 @util_user_router.message(Command('help'))
@@ -75,7 +80,7 @@ async def get_chat_id(message: Message):
 async def schedule_transfer_option():
     scheduler = AsyncIOScheduler(timezone='Europe/Moscow')
 
-    for i in range(14, 17):
+    for i in range(7, 17):
         scheduler.add_job(make_contribute_available, trigger='cron', hour=i, minute=0)
         scheduler.add_job(delete_message, trigger='cron', hour=i, minute=9)
         scheduler.add_job(make_withdraw_available, trigger='cron', hour=i, minute=50)

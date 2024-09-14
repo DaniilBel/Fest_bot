@@ -75,7 +75,8 @@ async def forward_text_to_support(message: Message):
         await message.answer("Ответ получен.")
 
 
-@user_router.message(lambda message: message.chat.type in ["private"] and user_selected_task.get(message.from_user.id) in available_text_tasks)
+@user_router.message(lambda message: message.chat.type in ["private"] and user_selected_task.get(
+    message.from_user.id) in available_text_tasks)
 # @user_router.message(F.chat.type.in_("private") & F.text)
 async def forward_text_to_support(message: Message):
     if message.text.lower() == "aboba".lower():
@@ -84,7 +85,8 @@ async def forward_text_to_support(message: Message):
         await message.answer("Ответ не засчитан\nВ случае несогласия пишите в техподдержку")
 
 
-@user_router.message(F.chat.type.in_("private") & F.photo)
+@user_router.message(F.chat.type.in_("private") & F.photo and (lambda message: user_selected_task.get(
+    message.from_user.id) in available_media_tasks or user_can_send_to_support.get(message.from_user.id) is True))
 async def forward_photo_to_support(message: Message):
     photo = message.photo[-1]
     forwarded_message = await bot.send_photo(
@@ -97,7 +99,9 @@ async def forward_photo_to_support(message: Message):
     await message.answer("Отправлено на проверку.")
 
 
-@user_router.message(F.chat.type.in_("private") & F.video)
+@user_router.message(F.chat.type.in_("private") & F.video and (lambda message: user_selected_task.get(
+    message.from_user.id) in available_media_tasks or user_can_send_to_support.get(message.from_user.id) is True))
+@user_router.message(lambda message: user_selected_task.get(message.from_user.id) in available_media_tasks)
 async def forward_video_to_support(message: Message):
     video = message.video
     forwarded_message = await bot.send_video(
@@ -110,7 +114,9 @@ async def forward_video_to_support(message: Message):
     await message.answer("Отправлено на проверку.")
 
 
-@user_router.message(F.chat.type.in_("private") & F.video_note)
+@user_router.message(F.chat.type.in_("private") & F.video_note and (lambda message: user_selected_task.get(
+    message.from_user.id) in available_media_tasks or user_can_send_to_support.get(message.from_user.id) is True))
+@user_router.message(lambda message: user_selected_task.get(message.from_user.id) in available_media_tasks)
 async def forward_video_note_to_support(message: Message):
     video_note = message.video_note
     forwarded_message = await bot.send_video_note(
