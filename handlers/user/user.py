@@ -4,12 +4,7 @@ from aiogram.types import Message
 from decouple import config
 
 from main import bot
-from db.store import (message_mapping,
-                      user_points,
-                      available_shortcut_tasks,
-                      available_text_tasks,
-                      available_media_tasks,
-                      user_selected_task)
+from db.store import *
 
 user_router = Router()
 GROUP_CHAT_ID = config('GROUP')
@@ -22,7 +17,12 @@ async def show_user_points(message: Message):
     print("/points")
     try:
         user_id = message.from_user.id
-        points = user_points.get(user_id)
+
+        user_info = await get_user_info(user_id)
+        points = user_info['points']
+        # deposit = user_info['deposit']
+        # await message.answer(f"Welcome! You have {points} points and {deposit} in your deposit.")
+
         await message.answer(f"{points}" if points is not None else 0)
     except Exception as e:
         print(e)

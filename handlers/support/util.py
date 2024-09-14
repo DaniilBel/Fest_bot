@@ -1,6 +1,6 @@
 from aiogram import Router, F
 from aiogram.types import Message
-from db.store import user_points
+from db.store import *
 
 util_support_router = Router()
 
@@ -18,6 +18,7 @@ async def show_help(message: Message):
 
 @util_support_router.message(F.chat.type.in_({"group", "supergroup"}) & F.text.startswith('/points'))
 async def show_help(message: Message):
+    user_points = await get_all_points()
     await message.answer(str(user_points))
 
 

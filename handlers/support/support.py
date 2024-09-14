@@ -5,7 +5,7 @@ from aiogram.types import Message, ChatPermissions, ReactionTypeEmoji
 from decouple import config
 
 from main import bot
-from db.store import message_mapping, user_points, restricted_users
+from db.store import *
 
 support_router = Router()
 GROUP_CHAT_ID = config('GROUP')
@@ -57,10 +57,14 @@ async def handle_support_award(message: Message):
         if points == 0:
             await bot.send_message(user_id, "Задание не зачтено.")
 
-        if user_id in user_points:
-            user_points[user_id] += points
+        user_info = await get_all_users()
+        user_points = await get_user_info(user_id)
+        p = user_points['points']
+
+        if user_id in user_info['user_id']:
+            await update_user_points(user_id, p + points)
         else:
-            user_points[user_id] = points
+            await update_user_points(user_id, points)
 
         await bot.send_message(user_id, "Задание зачтено.")
         await message.answer(f"Игрок с id {user_id} получил {points} чего-то от {message.from_user.username}. "
@@ -77,10 +81,15 @@ async def handle_edit_points(message: Message):
         _, user_id, points = message.text.split()
         user_id = int(user_id)
         points = int(points)
+
+        user_points = await get_user_info(user_id)
+        username = user_points['name']
+        p = user_points['points']
+
         # Edit the user's points manually
-        user_points[user_id] = points
+        await update_user_points(user_id, points)
         # Inform the support member and the user about the updated points
-        await message.answer(f"У игрока {user_id} было изменено количество баллов до {points}. "
+        await message.answer(f"У игрока {username}({user_id}) было изменено количество баллов до {points}. "
                              f"Изменил {message.from_user.username}")
         await bot.send_message(user_id, f"Количество баллов обновлено")
     except ValueError:
