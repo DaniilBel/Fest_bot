@@ -16,6 +16,14 @@ def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
     builder.adjust(2)
     builder.row(
         KeyboardButton(
+            text="Кол-во баллов на вкладе"
+        ),
+        KeyboardButton(
+            text="Кол-во баллов"
+        )
+    )
+    builder.row(
+        KeyboardButton(
             text="Написать в техподдержку"
         ),
         KeyboardButton(

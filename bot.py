@@ -1,10 +1,12 @@
 import asyncio
 import logging
 
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
 from handlers.support.support import support_router
 from handlers.support.util import util_support_router
 from handlers.user.user import user_router
-from handlers.user.util import util_user_router
+from handlers.user.util import util_user_router, schedule_transfer_option
 from handlers.task import task_router
 from main import dp, bot
 from utils.command_menu import set_commands
@@ -23,6 +25,8 @@ async def main():
         util_user_router,
         user_router,
         task_router)
+
+    await schedule_transfer_option()
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
     await set_commands()

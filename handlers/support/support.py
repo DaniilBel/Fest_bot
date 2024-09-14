@@ -9,7 +9,6 @@ from db.store import message_mapping, user_points, restricted_users
 
 support_router = Router()
 GROUP_CHAT_ID = config('GROUP')
-
 emo = ["👎", "🔥"]
 
 
@@ -35,7 +34,7 @@ async def forward_reply_to_user(message: Message):
             video_note = message.video_note
             await bot.send_video(user_id, video_note.file_id, caption="Поддержка решила ответить кружочком")
 
-        del message_mapping[original_message.message_id]
+        # del message_mapping[original_message.message_id]
 
     else:
         print(f"Сообщение не может быть отослано обратно: {message.text}")

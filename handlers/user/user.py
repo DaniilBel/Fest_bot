@@ -19,6 +19,7 @@ user_can_send_to_support = {}
 
 @user_router.message(F.chat.type.in_("private") & F.text.startswith('/points'))
 async def show_user_points(message: Message):
+    print("/points")
     try:
         user_id = message.from_user.id
         points = user_points.get(user_id)
@@ -30,6 +31,7 @@ async def show_user_points(message: Message):
 
 @user_router.message(lambda message: message.chat.type in ["private"] and message.text in available_text_tasks)
 async def select_text_task(message: Message):
+    print("text_task")
     user_id = message.from_user.id
     user_selected_task[user_id] = message.text
     await message.answer(f"{message.text}\n\nОтвет напишите текстом:")
@@ -37,6 +39,7 @@ async def select_text_task(message: Message):
 
 @user_router.message(lambda message: message.chat.type in ["private"] and message.text in available_media_tasks)
 async def select_media_task(message: Message):
+    print("text_task")
     user_id = message.from_user.id
     user_selected_task[user_id] = message.text
     await message.answer(f"{message.text}\n\nВ качестве ответа пришлите фото/видео/кружочек:")
@@ -44,8 +47,8 @@ async def select_media_task(message: Message):
 
 @user_router.message(F.chat.type.in_("private") & F.text == 'Написать в техподдержку')
 async def tech_support_menu(message: Message):
+    print("Check")
     user_id = message.from_user.id
-
     user_can_send_to_support[user_id] = True
     await message.answer("Опишите, что вас беспокоит")
 
@@ -55,6 +58,7 @@ async def tech_support_menu(message: Message):
 # @user_router.message(F.chat.type.in_("private") & F.text)
 # @user_router.message(lambda message: not user_can_send_to_support.get(message.from_user.id) is None)
 async def forward_text_to_support(message: Message):
+    print("forward to support")
     # if message.chat.id != GROUP_CHAT_ID:
     user_id = message.from_user.id
 
